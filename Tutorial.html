@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="stylesheet" href="tutorial.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+
+    <title>Tutorial</title>
+  </head>
+  <body>
+    <h1>How to Create a Quiz App</h1>
+    <p>This app uses ReactJS for the client and Node and Express for the server. Both are written in Typescript.</p>
+    <h3>Prerequisites</h3>
+    <p>
+      This tutorial requires Node.js to be installed, git (optional) and also VS
+      Code (optional) as code editor.
+    </p>
+    <h3>1. Setup project structure</h3>
+    <p>
+      Create a <code>quiz-app1</code> folder, in this folder run the <code>git init</code> command
+      (optional), then create two sub-folders: <code>server</code> and <code>client</code> under the
+      <code>quiz-app1</code> folder. Open the <code>quiz-app1</code> folder in VS Code.
+    </p>
+    <h3>2. Setup server</h3>
+    <p>
+      Inside the <code>server</code> sub-folder run <code>npm init -y</code> command. To add typescript we will now run the <code>npm install --save-dev
+      typescript</code> command. Next, we need to add <code>tsconfig.json</code> file with the
+      settings for tsc compiler. Add the  <code>tsconfig.json</code> file under the <code>server</code>
+      sub-folder and copy the following into it.
+      <div class="code-snippet-header">tsconfig.js</div>
+      <div class="code-snippet">
+      <span
+        ><pre
+          >{ 
+              "compilerOptions": { 
+                  "target": "es2016", 
+                  "module": "commonjs",
+                  "sourceMap": true, 
+                  "outDir": "./dist", 
+                  "esModuleInterop": true,
+                  "forceConsistentCasingInFileNames": true, 
+                  "strict": true,
+                  "skipLibCheck": true 
+                }, 
+                "include": ["src/**/*"] 
+            }
+      </pre></span
+      ></div>
+      Please note the <code>outDir</code> setting that instructs the tsc compiler
+      where to place its' output .js files.
+      <br />Now we can install <code>express</code> library (for our web service) and <code>nedb</code>
+      library (for our database). We will also install <code>nodemon</code> to allow
+      automatic compiling after source code edits. Run the following two
+      commands: <code><br />npm install express nedb <br />npm install --save-dev
+      @types/express @types/nedb nodemon
+      <br /></code>
+      <p>
+      We are almost done setting up the server project. We just need to setup
+      how to start our server in our developement environment. To do so, add the
+      following lines in the <code>package.json</code> file inside the "scripts" block
+      </p>
+      <div class="code-snippet-header">package.js</div>
+      <div class="code-snippet">
+          <span
+        ><pre>
+            "dev": "node ./node_modules/nodemon/bin/nodemon.js -e ts --exec \"npm run compile\"", 
+            "compile": "npx tsc && node ./dist/main.js"</pre
+        ></span
+      >
+      </div>
+      <br />
+      Now, every time our code changes, two main processes will occur:
+      compilation and restart of our server from it's start point in <code>./dist/main.js</code> which is a compilation result of <code>main.ts</code>
+    </p>
+    <h3>3. Server implementation</h3>
+    <p>
+      The server must have an entry point. And so, our server's enty point is in the <code>main.ts</code> in the <code>src</code>
+      sub-folder. If you have downloaded or copied the code, for this tutorial you can now start the server and make sure that it does indeed start up. We
+      will use the "dev" script that we have already specified to run the server
+      in the developement environment. Run the "npm run dev" command in the
+      "server" sub-folder. You should see the "quiz server open for requests on
+      port 80" message.
+    </p>
+    <h3>Server and Routers</h3>
+    <p>
+      We will extract the code that manages the server into <code>quiz_server.ts</code> and
+      the code that manages quiz-related PUT, POST, etc. requests into the
+      <code>quiz_router.ts</code>. 
+      <br/>
+        The <code>quiz_server.ts</code> defines a class to represent our server. Inside it, 
+        we load the router for any  <code>/quiz</code> quiz-related requests.
+       <div class="code-snippet-header">quiz_server.ts</div>
+      <div class="code-snippet">
+      <span>
+
+        <pre><code>
+            private initRoute() {
+                this.app.use(this.quizUrl, require("./quiz_router"));
+            }</code></pre
+        >
+      </span>
+    </div>
+      
+      The <code>quiz_router.ts</code> creates an express router that will
+      define and implement an endpoint for each RESTful request that our server can handle. For example,
+
+      <div class="code-snippet-header">quiz_router.ts</div>
+      <div class="code-snippet">
+      <span>
+
+        <pre><code>
+            quizRouter.get("/", async (inRequest, inResponse) => {
+            console.log("GET /quiz");
+            try {
+                const quizWorker: QuizWorker = new QuizWorker();
+                const quizzes: IQuiz[] = await quizWorker.listQuizzes();
+                console.log("GET /quizzes: OK. Number of quizzes = ", quizzes.length);
+                inResponse.json(quizzes);
+            } catch (inError) {
+                console.log("GET /quiz: Error", inError);
+                inResponse.send("error");
+            }
+            });</code></pre
+        >
+      </span>
+    </div>
+      Here, the GET request creates a <code>QuizWorker</code> object that in it's turn passes the request to
+      the database and returns an array of quizzes.
+    </p>
+    <h3>QuizWorker</h3>
+    <p>
+        This worker class implements the CRUD methods to retrieve, create, update and delete quizzes.
+        <br/>
+        The <code>Nedb</code> database is a file located in the <code>quiz-app1/serve/dist</code>, and it will be created if it doesn't yet exist.
+        <div class="code-snippet-header">quiz_worker.ts</div>
+      <div class="code-snippet">
+      <span>
+
+        <pre><code>
+            constructor() {
+                this._db = new Nedb({
+                filename: path.join(__dirname, "quiz.db"),
+                autoload: true,
+                });
+            }</code></pre
+        >
+      </span>
+    </div>
+
+    Adding a quiz is implemented, not surprisingly, in <code>addQuiz</code> method: 
+     <div class="code-snippet-header">quiz_worker.ts</div>
+      <div class="code-snippet">
+      <span>
+
+        <pre><code>
+            public addQuiz(quiz: IQuiz): Promise<IQuiz> {
+                console.log("IN QuizWorker.addQuiz()", quiz);
+
+                return new Promise<IQuiz>((inResolve, inReject) => {
+                this._db.insert<IQuiz>(
+                    quiz,
+                    (inError: Error | null, inNewQuiz: IQuiz) => {
+                    if (inError) {
+                        console.log("ERROR in QuizWorker.addQuiz(): ", inError);
+                        inReject(inError);
+                    } else {
+                        console.log("SUCCESS in QuizWorker.addQuiz(): ", inNewQuiz);
+                        inResolve(inNewQuiz);
+                    }
+                    }
+                );
+                });
+            }</code></pre
+        >
+      </span>
+    </div>
+    </p>
+  </body>
+</html>

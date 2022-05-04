@@ -1,0 +1,27 @@
+body {
+  font-family: "Times New Roman", Times, serif;
+}
+h3 {
+  color: darkblue;
+  font-family: "Times New Roman", Times, serif;
+}
+p {
+  font-size: medium;
+}
+code {
+  background-color: rgb(246, 249, 250);
+}
+.code-snippet-header {
+  background-color: lightblue;
+  color: white;
+  margin: 5px;
+  margin-bottom: 0;
+  padding: 5px;
+}
+.code-snippet {
+  border: 2px solid lightblue;
+  background-color: rgb(246, 249, 250);
+  margin: 5px;
+  margin-top: 0;
+  padding: 5px;
+}
