@@ -1,4 +1,5 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
+import { BaseError, QuizNotFound, QuizzesNotFound } from "./errors";
 import { IQuiz } from "./interfaces/interfaces";
 import { QuizWorker } from "./quiz_worker";
 
@@ -10,9 +11,8 @@ const quizRouter = express.Router();
  */
 quizRouter.use((req, res, next) => {
   //log date and time, method, and url for each request
-  const date = Date.now();
   console.log(
-    `>> ${new Date(date).toLocaleString()} ${req.method} ${req.baseUrl}${
+    `>> ${new Date(Date.now()).toLocaleString()} ${req.method} ${req.baseUrl}${
       req.url
     } `
   );
@@ -32,9 +32,9 @@ quizRouter.get("/test", (req, res, next) => {
  */
 quizRouter.get("/error", (req, res, next) => {
   try {
-    throw new Error("this is an error");
+    throw new BaseError();
   } catch (err) {
-    errorHandler(req, res, err);
+    next(err);
   }
   next();
 });
@@ -49,7 +49,26 @@ quizRouter.get("/", async (req, res, next) => {
     res.json(quizzes);
     next();
   } catch (err) {
-    errorHandler(req, res, err);
+    next(new QuizzesNotFound((err as any).stack));
+  }
+});
+
+/**
+ * Get one quiz by id.
+ * Throws a QuizNotFound error in case su such id exists
+ */
+quizRouter.get("/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const quizWorker: QuizWorker = new QuizWorker();
+    const quiz: IQuiz = await quizWorker.getQuizById(id);
+    if (!quiz) {
+      throw new QuizNotFound(id);
+    }
+    res.json(quiz);
+    next();
+  } catch (err) {
+    next(err);
   }
 });
 
@@ -63,7 +82,7 @@ quizRouter.post("/", async (req, res, next) => {
     res.json(quiz);
     next();
   } catch (err) {
-    errorHandler(req, res, err);
+    next(new BaseError(500, "Failed to add quiz", (err as any).stack)); //tbd
   }
 });
 
@@ -76,11 +95,24 @@ quizRouter.use((req, res, next) => {
   next();
 });
 
-//Error handling
-const errorHandler = (req: Request, res: Response, err: any) => {
-  console.log(`ERROR:: ${req.method} ${req.baseUrl}${req.url} - ${err}`);
-  res.status(err.status || 500).send({ error: err.message });
-};
+/**Error handling */
+quizRouter.use(
+  (err: BaseError | Error, req: Request, res: Response, next: NextFunction) => {
+    console.log(
+      `ERROR:: ${req.method} ${req.baseUrl}${req.url} - ${err.message}`
+    );
+
+    let error: BaseError;
+    if (!(err instanceof BaseError)) {
+      error = new BaseError(500, err.message, err.stack);
+    } else {
+      error = err;
+    }
+    res
+      .status(error.status)
+      .send({ message: error.message, details: error.details });
+  }
+);
 
 //export router
 module.exports = quizRouter;

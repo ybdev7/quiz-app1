@@ -115,29 +115,115 @@
       <span>
 
         <pre><code>
-            quizRouter.get("/", async (inRequest, inResponse) => {
-            console.log("GET /quiz");
-            try {
-                const quizWorker: QuizWorker = new QuizWorker();
-                const quizzes: IQuiz[] = await quizWorker.listQuizzes();
-                console.log("GET /quizzes: OK. Number of quizzes = ", quizzes.length);
-                inResponse.json(quizzes);
-            } catch (inError) {
-                console.log("GET /quiz: Error", inError);
-                inResponse.send("error");
-            }
-            });</code></pre
+            quizRouter.get("/:id", async (req, res, next) => {
+                try {
+                    const id = req.params.id;
+                    const quizWorker: QuizWorker = new QuizWorker();
+                    const quiz: IQuiz = await quizWorker.getQuizById(id);
+                    if (!quiz) {
+                    throw new QuizNotFound(id);
+                    }
+                    res.json(quiz);
+                    next();
+                } catch (err) {
+                    next(err);
+                }
+                });</code></pre
         >
       </span>
     </div>
       Here, the GET request creates a <code>QuizWorker</code> object that in it's turn passes the request to
-      the database and returns an array of quizzes.
+      the database by calling <code>await quizWorker.getQuizById(id)</code> that returns a quiz. In case no such quiz is found in the database, 
+      this code throws a custom <code>QuizNotFound</code> exception. Here, we make sure that this and any other exception will be handled by the 
+      error handler that is part of the moddlewear by calling <code>next(err)</code> in the <code>catch</code> block. 
+      <br/>
+      <i>Quick aside  error handling mechanism- //tbd</i>
+      <br/>
+      The error handler that is defined in the end of <code>quiz-router</code> module accepts either an <code>Error</code> or our 
+      custom exception <code>BaseException</code> and sends an error status message, and detailed info as a responce:
+      <div class="code-snippet-header">quiz_router.ts</div>
+      <div class="code-snippet">
+      <span>
+        <pre><code>
+          quizRouter.use(
+            (err: BaseError | Error, req: Request, res: Response, next: NextFunction) => {
+                console.log(
+                `ERROR:: ${req.method} ${req.baseUrl}${req.url} - ${err.message}`
+                );
+
+                let error: BaseError;
+                if (!(err instanceof BaseError)) {
+                error = new BaseError(500, err.message, err.stack);
+                } else {
+                error = err;
+                }
+                res
+                .status(error.status)
+                .send({ message: error.message, details: error.details });
+            }
+            );
+</code></pre
+        >
+      </span>
+    </div>
+      In case there is a quiz with such an <i>id</i> and it was retrieved successfully by our worker, a call to <code>next();</code> 
+      ensures our middleware will be called for logging the end of this GET method.
+      <br/>
+      Speaking of the middleware other than error handling, it currenly does only two things: logs at the begining of any 
+      request to the router and logs in the end. The code below:
+      <div class="code-snippet-header">quiz_router.ts</div>
+      <div class="code-snippet">
+      <span>
+        <pre><code>
+          quizRouter.use((req, res, next) => {
+            //log date and time, method, and url for each request
+            console.log(
+                `>> ${new Date(Date.now()).toLocaleString()} ${req.method} ${req.baseUrl}${
+                req.url
+                } `
+            );
+            next();
+            });</code></pre
+        >
+      </span>
+    </div>
+    will execute each time one of the endpoints <code>quizRouter</code> is invoked and will output something resembling
+    <div class="output-snippet-header">quiz_router.ts</div>
+      <div class="output-snippet">
+      <span>
+        <pre><code>
+            &gt;&gt; 2022-05-04, 2:22:23 p.m. GET /quiz/</code></pre
+        >
+      </span>
+    </div>
+    In addition, just as each method finishes executing, the code below will run:
+    <div class="code-snippet-header">quiz_router.ts</div>
+      <div class="code-snippet">
+      <span>
+        <pre><code>
+            quizRouter.use((req, res, next) => {
+                //log end of each request
+                console.log(`&lt;&lt;END ${req.method} ${req.baseUrl}${req.url} `);
+                next();
+                });</code></pre
+        >
+      </span>
+    </div>
+    This will result in an output of 
+    <div class="output-snippet-header">quiz_router.ts</div>
+      <div class="output-snippet">
+      <span>
+        <pre><code>
+            &lt;&lt; END GET /quiz/</code></pre
+        >
+      </span>
+    </div>
     </p>
     <h3>QuizWorker</h3>
     <p>
         This worker class implements the CRUD methods to retrieve, create, update and delete quizzes.
         <br/>
-        The <code>Nedb</code> database is a file located in the <code>quiz-app1/serve/dist</code>, and it will be created if it doesn't yet exist.
+        The <code>Nedb</code> database is a file located in the <code>quiz-app1/server/dist</code>, and it will be created if it doesn't yet exist.
         <div class="code-snippet-header">quiz_worker.ts</div>
       <div class="code-snippet">
       <span>
@@ -159,27 +245,28 @@
       <span>
 
         <pre><code>
-            public addQuiz(quiz: IQuiz): Promise<IQuiz> {
-                console.log("IN QuizWorker.addQuiz()", quiz);
+        public addQuiz(quiz: IQuiz): Promise&lt;IQuiz&gt; {
+            console.log("IN QuizWorker.addQuiz()", quiz);
 
-                return new Promise<IQuiz>((inResolve, inReject) => {
-                this._db.insert<IQuiz>(
-                    quiz,
-                    (inError: Error | null, inNewQuiz: IQuiz) => {
-                    if (inError) {
-                        console.log("ERROR in QuizWorker.addQuiz(): ", inError);
-                        inReject(inError);
-                    } else {
-                        console.log("SUCCESS in QuizWorker.addQuiz(): ", inNewQuiz);
-                        inResolve(inNewQuiz);
-                    }
-                    }
-                );
-                });
-            }</code></pre
+            return new Promise&lt;IQuiz&gt((resolveHandler, rejectHandler) => {
+            this._db.insert&lt;IQuiz&gt(quiz, (err: Error | null, newQuiz: IQuiz) => {
+                if (err) {
+                console.log("ERROR in QuizWorker.addQuiz(): ", err);
+                rejectHandler(err);
+                } else {
+                console.log("SUCCESS in QuizWorker.addQuiz(): ", newQuiz);
+                resolveHandler(newQuiz);
+                }
+            });
+            });
+        }
+        </code></pre
         >
       </span>
     </div>
+    <code>addQuiz</code> returns a <code>Promise&lt;IQuiz&gt</code>. The promise expects, and accepts, a callback function as a parameter. 
+    According to the documentation, "This callback is passed two arguments: a resolve callback used to resolve the promise with a value or the result of another promise, and a reject callback used to reject the promise with a provided reason or error."
+    We use the <code>Nedb.insert</code> function and in its callback either resolve the promise or reject it in case of an error.
     </p>
   </body>
 </html>

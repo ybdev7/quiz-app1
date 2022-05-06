@@ -33,3 +33,8 @@ export interface IQuiz extends IEntity {
   level: QuizLevel;
   questions: IQuestion[];
 }
+
+export interface IQuizError {
+  status: number;
+  details: string;
+}
