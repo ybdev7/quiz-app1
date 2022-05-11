@@ -8,26 +8,46 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="How to Create a Quiz App Using NodeJS, ExpressJS and ReactJS"
     />
 
     <title>Tutorial</title>
   </head>
   <body>
-    <h1>How to Create a Quiz App</h1>
-    <p>This app uses ReactJS for the client and Node and Express for the server. Both are written in Typescript.</p>
-    <h3>Prerequisites</h3>
+    <div class="upper-header"><a class="button-link" href="https://reactjs.org/" target="_blank" rel="noopener noreferrer">React</a>
+      <a class="button-link" href="https://nodejs.org/en/" target="_blank" rel="noopener noreferrer">Node.js</a> 
+      <a class="button-link" href="https://expressjs.com/" target="_blank" rel="noopener noreferrer">Express</a>
+      <a class="button-link" href="https://www.typescriptlang.org/" target="_blank" rel="noopener noreferrer">TypeScript</a></div>
+    <h1>Create a Quiz App</h1>
+    <div class="sub-header">May 11, 2022 | 10 minute read</div>
+    <div class="main-container">
+      <div class="general">
+        <!-- <h1>How to Create a Quiz App</h1> -->
+        <p>This app uses ReactJS for the client and Node and Express for the server. Both are written in Typescript. 
+          Code can be viewed, downloaded or cloned
+         at <a href="https://github.com/ybdev7/quiz-app1">ybdev7/quiz-app1</a>.</p>
+    <div>
+        <h3>Table of Content</h3>
+        <div class="content">
+        <a href="#prerequisites">Prerequisites</a>
+        <br/><a href="#section-1">1. Setup Project Structure</a>
+        <br/><a href="#section-2">2. Setup Server</a>
+        <br/><a href="#section-3">3. Server Implementation</a>
+        <br/><a href="#section-3">3. Server Testing</a>
+        </div>
+    </div>
+    <h3 id="prerequisites">Prerequisites</h3>
     <p>
       This tutorial requires Node.js to be installed, git (optional) and also VS
       Code (optional) as code editor.
     </p>
-    <h3>1. Setup project structure</h3>
+    <h3 id="section-1">1. Setup project structure</h3>
     <p>
-      Create a <code>quiz-app1</code> folder, in this folder run the <code>git init</code> command
+      You can clone or download the code  <a href="https://github.com/ybdev7/quiz-app1">here</a>. Or, you can follow along this turorial to build your own version. In that case, create a <code>quiz-app1</code> folder, in this folder run the <code>git init</code> command
       (optional), then create two sub-folders: <code>server</code> and <code>client</code> under the
       <code>quiz-app1</code> folder. Open the <code>quiz-app1</code> folder in VS Code.
     </p>
-    <h3>2. Setup server</h3>
+    <h3 id="section-2">2. Setup server</h3>
     <p>
       Inside the <code>server</code> sub-folder run <code>npm init -y</code> command. To add typescript we will now run the <code>npm install --save-dev
       typescript</code> command. Next, we need to add <code>tsconfig.json</code> file with the
@@ -52,7 +72,7 @@
             }
       </pre></span
       ></div>
-      Please note the <code>outDir</code> setting that instructs the tsc compiler
+      <p>Please note the <code>outDir</code> setting that instructs the tsc compiler
       where to place its' output .js files.
       <br />Now we can install <code>express</code> library (for our web service) and <code>nedb</code>
       library (for our database). We will also install <code>nodemon</code> to allow
@@ -60,6 +80,7 @@
       commands: <code><br />npm install express nedb <br />npm install --save-dev
       @types/express @types/nedb nodemon
       <br /></code>
+      </p>
       <p>
       We are almost done setting up the server project. We just need to setup
       how to start our server in our developement environment. To do so, add the
@@ -75,11 +96,14 @@
       >
       </div>
       <br />
+      <p>
       Now, every time our code changes, two main processes will occur:
       compilation and restart of our server from it's start point in <code>./dist/main.js</code> which is a compilation result of <code>main.ts</code>
     </p>
-    <h3>3. Server implementation</h3>
+    <h3 id="section-3">3. Server implementation</h3>
     <p>
+      Our server will allow RESTful Api requests to list all quizzes, create, update and delete a quiz.
+      <br/>
       The server must have an entry point. And so, our server's enty point is in the <code>main.ts</code> in the <code>src</code>
       sub-folder. If you have downloaded or copied the code, for this tutorial you can now start the server and make sure that it does indeed start up. We
       will use the "dev" script that we have already specified to run the server
@@ -132,6 +156,7 @@
         >
       </span>
     </div>
+    <p>
       Here, the GET request creates a <code>QuizWorker</code> object that in it's turn passes the request to
       the database by calling <code>await quizWorker.getQuizById(id)</code> that returns a quiz. In case no such quiz is found in the database, 
       this code throws a custom <code>QuizNotFound</code> exception. Here, we make sure that this and any other exception will be handled by the 
@@ -141,6 +166,7 @@
       <br/>
       The error handler that is defined in the end of <code>quiz-router</code> module accepts either an <code>Error</code> or our 
       custom exception <code>BaseException</code> and sends an error status message, and detailed info as a responce:
+      </p>
       <div class="code-snippet-header">quiz_router.ts</div>
       <div class="code-snippet">
       <span>
@@ -268,5 +294,23 @@
     According to the documentation, "This callback is passed two arguments: a resolve callback used to resolve the promise with a value or the result of another promise, and a reject callback used to reject the promise with a provided reason or error."
     We use the <code>Nedb.insert</code> function and in its callback either resolve the promise or reject it in case of an error.
     </p>
+</div>
+<div class="small-right-panel">
+  <!-- <h6>Topics</h6> -->
+  <ul class="tags-ul"><b>Topics</b>
+    <li><a href="#section-3">RESTful API</a></li>
+    <li>await, async</li>
+    <li>Testing with Jest</li>
+    <li>React Hooks</li>
+    <li>Higher Order Components</li>
+  </ul>
+  <hr/>
+   <ul class="tags-ul"><b>What Next?</b>
+    <li>Pagination</li>
+    <li>Custom Hooks</li>
+    <li>Etc...</li>
+  </ul>
+</div>
+</div>
   </body>
 </html>
