@@ -17,8 +17,12 @@
     <div class="upper-header"><a class="button-link" href="https://reactjs.org/" target="_blank" rel="noopener noreferrer">React</a>
       <a class="button-link" href="https://nodejs.org/en/" target="_blank" rel="noopener noreferrer">Node.js</a> 
       <a class="button-link" href="https://expressjs.com/" target="_blank" rel="noopener noreferrer">Express</a>
-      <a class="button-link" href="https://www.typescriptlang.org/" target="_blank" rel="noopener noreferrer">TypeScript</a></div>
-    <h1>Create a Quiz App</h1>
+      <a class="button-link" href="https://www.typescriptlang.org/" target="_blank" rel="noopener noreferrer">TypeScript</a>
+    <a class="button-link" href="https://jestjs.io/" target="_blank" rel="noopener noreferrer">Jest</a></div>
+    
+    </div>
+    
+      <h1>Create a Quiz App</h1>
     <div class="sub-header">May 11, 2022 | 10 minute read</div>
     <div class="main-container">
       <div class="general">
@@ -33,7 +37,7 @@
         <br/><a href="#section-1">1. Setup Project Structure</a>
         <br/><a href="#section-2">2. Setup Server</a>
         <br/><a href="#section-3">3. Server Implementation</a>
-        <br/><a href="#section-3">3. Server Testing</a>
+        <br/><a href="#section-4">4. Server Testing</a>
         </div>
     </div>
     <h3 id="prerequisites">Prerequisites</h3>
@@ -74,11 +78,11 @@
       ></div>
       <p>Please note the <code>outDir</code> setting that instructs the tsc compiler
       where to place its' output .js files.
-      <br />Now we can install <code>express</code> library (for our web service) and <code>nedb</code>
+      <br />Now we can install <code>express</code> library (for our web service), <code>uuid</code> for unique ids and <code>nedb</code>
       library (for our database). We will also install <code>nodemon</code> to allow
       automatic compiling after source code edits. Run the following two
-      commands: <code><br />npm install express nedb <br />npm install --save-dev
-      @types/express @types/nedb nodemon
+      commands: <code><br />npm install express nedb uuid <br />npm install --save-dev
+      @types/express @types/nedb @types/uuid nodemon
       <br /></code>
       </p>
       <p>
@@ -131,9 +135,9 @@
       </span>
     </div>
       
-      The <code>quiz_router.ts</code> creates an express router that will
+     <p> The <code>quiz_router.ts</code> creates an express router that will
       define and implement an endpoint for each RESTful request that our server can handle. For example,
-
+      </p>
       <div class="code-snippet-header">quiz_router.ts</div>
       <div class="code-snippet">
       <span>
@@ -192,11 +196,13 @@
         >
       </span>
     </div>
+    <p>
       In case there is a quiz with such an <i>id</i> and it was retrieved successfully by our worker, a call to <code>next();</code> 
       ensures our middleware will be called for logging the end of this GET method.
       <br/>
       Speaking of the middleware other than error handling, it currenly does only two things: logs at the begining of any 
       request to the router and logs in the end. The code below:
+      </p>
       <div class="code-snippet-header">quiz_router.ts</div>
       <div class="code-snippet">
       <span>
@@ -213,7 +219,8 @@
         >
       </span>
     </div>
-    will execute each time one of the endpoints <code>quizRouter</code> is invoked and will output something resembling
+    <p>will execute each time one of the endpoints <code>quizRouter</code> is invoked and will output something resembling
+      </p>
     <div class="output-snippet-header">quiz_router.ts</div>
       <div class="output-snippet">
       <span>
@@ -222,7 +229,7 @@
         >
       </span>
     </div>
-    In addition, just as each method finishes executing, the code below will run:
+    <p>In addition, just as each method finishes executing, the code below will run:</p>
     <div class="code-snippet-header">quiz_router.ts</div>
       <div class="code-snippet">
       <span>
@@ -235,7 +242,7 @@
         >
       </span>
     </div>
-    This will result in an output of 
+    <p>This will result in an output of </p>
     <div class="output-snippet-header">quiz_router.ts</div>
       <div class="output-snippet">
       <span>
@@ -250,7 +257,7 @@
         This worker class implements the CRUD methods to retrieve, create, update and delete quizzes.
         <br/>
         The <code>Nedb</code> database is a file located in the <code>quiz-app1/server/dist</code>, and it will be created if it doesn't yet exist.
-        <div class="code-snippet-header">quiz_worker.ts</div>
+        </p><div class="code-snippet-header">quiz_worker.ts</div>
       <div class="code-snippet">
       <span>
 
@@ -265,7 +272,8 @@
       </span>
     </div>
 
-    Adding a quiz is implemented, not surprisingly, in <code>addQuiz</code> method: 
+    <p>Adding a quiz is implemented, not surprisingly, in <code>addQuiz</code> method: 
+     </p>
      <div class="code-snippet-header">quiz_worker.ts</div>
       <div class="code-snippet">
       <span>
@@ -290,26 +298,176 @@
         >
       </span>
     </div>
-    <code>addQuiz</code> returns a <code>Promise&lt;IQuiz&gt</code>. The promise expects, and accepts, a callback function as a parameter. 
+    <p><code>addQuiz</code> returns a <code>Promise&lt;IQuiz&gt</code>. The promise expects, and accepts, a callback function as a parameter. 
     According to the documentation, "This callback is passed two arguments: a resolve callback used to resolve the promise with a value or the result of another promise, and a reject callback used to reject the promise with a provided reason or error."
     We use the <code>Nedb.insert</code> function and in its callback either resolve the promise or reject it in case of an error.
     </p>
+
+    <h3 id="section-4">4. Server Testing</h3>
+    <p>use jest for unit and integratin testing </p>
+    <h3>Setup Jest</h3>
+    <p>in server folder we will install Jest to our by running 
+<pre><code>          npm install --save-dev jest @types/jest ts-jest ts-node
+          npm install --save-dev supertest @types/supertest</code></pre>
+    <p>Create jest.config.ts file in the server folder and copy the following into it :</p>
+     <div class="code-snippet-header">jest.config.ts</div>
+      <div class="code-snippet">
+      <span>
+        <pre><code>
+        import type { Config } from "@jest/types";
+
+        // Sync object
+        const config: Config.InitialOptions = {
+          verbose: true,
+          transform: {
+            "^.+\\.ts?$": "ts-jest",
+          },
+
+          //this match will ensure that only .ts files are run by jest, excluding the .js files created in dist folder
+          testMatch: ["**/test/**/**/*.+(ts|tsx)", "**/?(*.)+(spec|test).+(ts|tsx)"],
+        };
+        export default config;
+        </code></pre>
+      </span>
+    </div>
+    <p>Add the <code>test</code> script in the  <code>package.json</code> file:</p>
+    <div class="code-snippet-header">package.json</div>
+      <div class="code-snippet">
+      <span>
+        <pre><code>
+        "scripts": {
+          "test": "jest --coverage --detectOpenHandles --maxWorkers=1",
+          "dev": "node ./node_modules/nodemon/bin/nodemon.js -e ts --exec \"npm run compile\"",
+          "compile": "npx tsc && node ./dist/main.js"
+        },
+        </code></pre>
+      </span>
+    </div>
+    <p>To make sure that the test files are compiled, update <code>tsconfig.json</code> file with the following:</p>
+    <div class="code-snippet-header">tsconfig.json</div>
+      <div class="code-snippet">
+      <span>
+        <pre><code>
+        "include": ["src/**/*", "test/**/*"]
+        </code></pre>
+      </span>
+    </div>
+    <p>Basically, with this configuration we are telling Jest where our tests can be found - in <code>test</code> folder and how to run them. 
+      <i>TBD - more expl</i> So, let's create the <code>tests</code> folder
+    under <code>server</code> folder. Inside it, create two folders: <code>unit</code> and <code>integration</code>. In the <code>unit</code> we will place tests that will test our logic, namely the <code>QuizWorker</code>,
+  while the <code>integration</code> folder will contain tests for our RESTful API endpoints.</p>
+  <p>Our folder structure at this point looks as folllows:</p>
+  <div class="output-snippet-header">folder structure</div>
+      <div class="output-snippet">
+      <span>
+        <pre><code>
+          /quiz-app1
+            /server
+              /dist
+              /node_modules
+              /src
+              /test 
+                /integration
+                /unit
+        </code></pre
+        >
+      </span>
+    </div>
+  <p>Now, we will add our tests: <code>quiz_worker.test.ts</code> in <code>unit</code> folder, and <code>quiz.test.ts</code> in the <code>integration</code> folder.
+  At this point it is a very simple one, setting up an empty database before we begin our tests
+   and emptying the database when the tests are done. Also, there is a test to check that the database is indeed empty.</p>
+  <div class="code-snippet-header">quiz_worker.test.ts</div>
+      <div class="code-snippet">
+      <span>
+        <pre><code>
+          import { QuizWorker } from "../../src/quiz_worker";
+
+          const dbEmpty = async () => {
+            const quizWorker = new QuizWorker();
+            await quizWorker.deleteAll();
+          };
+
+          describe("QuizWorker", () => {
+            beforeAll(async () => {
+              await dbEmpty();
+            });
+            afterAll(async () => {
+              await dbEmpty();
+            });
+
+            describe("QuizWorker Tests", () => {
+              it("Should return 0 quizzes", async () => {
+                let worker = new QuizWorker();
+                let data = await worker.listQuizzes();
+                expect(data?.length).toEqual(0);
+              });
+            });
+          });
+        </code></pre>
+      </span>
+    </div>
+
+    <p>Before adding more tests, let's run this test with <code>npm run test</code> or <code>npm test</code>. If the test passed,
+       let's add the remaining tests and re-run Jest to make sure all the tests pass. The outut should resemble the following:</p>
+    <div class="output-snippet-header">quiz_router.ts</div>
+      <div class="output-snippet">
+      <span>
+        <pre><code>
+ PASS  test/unit/quiz_worker.test.ts
+  QuizWorker
+    numbers worker
+      √ Should return 0 quizzes [listQuizzes] (69 ms)
+      √ should add [addQuiz] one quiz (27 ms)
+      √ Should retrieve [listQuizzes] one quiz (27 ms)
+      √ Should update [updateQuiz] one quiz (80 ms)
+      √ Should retrieve [getQuizById] one quiz (43 ms)
+      √ Should delete one [deleteQuiz] quiz and have 0 quizzes in db (125 ms)
+
+-----------------|---------|----------|---------|---------|-----------------------------------------
+File             | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-----------------|---------|----------|---------|---------|-----------------------------------------
+All files        |   80.95 |     64.7 |     100 |   80.64 |
+ src             |   77.35 |    53.84 |     100 |   76.92 |
+  quiz_worker.ts |   77.35 |    53.84 |     100 |   76.92 | 21-22,37-38,60-61,79-80,105-106,124-125
+ src/interfaces  |     100 |      100 |     100 |     100 |
+  interfaces.ts  |     100 |      100 |     100 |     100 |
+-----------------|---------|----------|---------|---------|-----------------------------------------
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        3.053 s, estimated 4 s
+Ran all test suites.</code></pre
+        >
+      </span>
+    </div>
+    <p>The <code>--coverage</code> option continiently summarizes for us the percentage of code tested, so that we know exactly how much more of it is untested. 
+    With that in mind, let's continue to test our routes.</p>
+    <h3>Integration Tests for Routes</h3>
 </div>
+<!-- Right Panel -->
 <div class="small-right-panel">
-  <!-- <h6>Topics</h6> -->
-  <ul class="tags-ul"><b>Topics</b>
-    <li><a href="#section-3">RESTful API</a></li>
-    <li>await, async</li>
-    <li>Testing with Jest</li>
-    <li>React Hooks</li>
-    <li>Higher Order Components</li>
-  </ul>
-  <hr/>
-   <ul class="tags-ul"><b>What Next?</b>
-    <li>Pagination</li>
-    <li>Custom Hooks</li>
-    <li>Etc...</li>
-  </ul>
+  <div class="small-right-inner-panel">
+    <p>Github</p>
+    <a href="https://github.com/ybdev7/quiz-app1">ybdev/quiz-app1</a>
+  </div>
+  
+  <div class="small-right-inner-panel">
+    <p>Topics</p>
+    <a href="#section-3">RESTful API</a></li>
+    <br/><a>await, async</a>
+    <br/><a>Testing with Jest</a>
+    <br/><a>React Hooks</a>
+    <br/><a>Higher Order Components</a>
+
+  </div>
+  
+  
+  <div class="small-right-inner-panel">
+   <p>Next Read</p>
+    <a>Pagination</a>
+    <br/><a>React Custom Hooks</a>
+    <br/><a>Etc...</a>
+</div>
 </div>
 </div>
   </body>

@@ -15,6 +15,10 @@ export class quizServer {
     this.initRoute();
   }
 
+  public get = () => {
+    return this.app;
+  };
+
   private init() {
     this.app.use(express.json());
     this.app.use(

@@ -66,4 +66,68 @@ export class QuizWorker {
       });
     });
   }
+
+  public deleteQuiz(id: string): Promise<string> {
+    console.log("in Tasks.Worker.deleteQuiz()", id);
+
+    return new Promise<string>((resolveHandler, rejectHandler) => {
+      this._db.remove(
+        { _id: id },
+        {},
+        (err: Error | null, numRemoved: number) => {
+          if (err) {
+            console.log("ERROR in Tasks.Worker.deleteQuiz(): ", err);
+            rejectHandler(err);
+          } else {
+            console.log("SUCCESS in Tasks.Worker.deleteQuiz():", numRemoved);
+            resolveHandler(id);
+          }
+        }
+      );
+    });
+  }
+
+  public updateQuiz(quiz: IQuiz): Promise<IQuiz> {
+    console.log("Tasks.Worker.updateQuiz()", quiz);
+
+    return new Promise<IQuiz>((resolveHandler, rejectHandler) => {
+      this._db.update<IQuiz>(
+        { _id: quiz._id },
+        quiz,
+        { returnUpdatedDocs: true },
+        (
+          err: Error | null,
+          numOfUpdated: number,
+          updatedDoc: any,
+          upsert: boolean
+        ) => {
+          if (err) {
+            console.log("ERROR in Tasks.Worker.updateQuiz(): ", err);
+            rejectHandler(err);
+          } else {
+            console.log(
+              "SUCCESS in Tasks.Worker.updateTask(): ",
+              (updatedDoc as IQuiz)._id
+            );
+            resolveHandler(updatedDoc as IQuiz);
+          }
+        }
+      );
+    });
+  }
+  public deleteAll(): Promise<void> {
+    console.log("IN QuizWorker.deleteAll()");
+
+    return new Promise<void>((resolveHandler, rejectHandler) => {
+      this._db.remove({}, (err: Error | null) => {
+        if (err) {
+          console.log("ERROR in QuizWorker.deleteAll(): ", err);
+          rejectHandler(err);
+        } else {
+          console.log("SUCCESS in QuizWorker.deleteAll()");
+          resolveHandler();
+        }
+      });
+    });
+  }
 }

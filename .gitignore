@@ -3,6 +3,7 @@
 # dependencies
 /server/dist
 /server/node_modules
+/server/coverage
 /client/node_modules
 /node_modules
 /.pnp
