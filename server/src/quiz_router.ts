@@ -57,7 +57,7 @@ quizRouter.get("/", async (req, res, next) => {
  * Get one quiz by id.
  * Throws a QuizNotFound error in case su such id exists
  */
-quizRouter.get("/:id", async (req, res, next) => {
+quizRouter.get("/id=:id", async (req, res, next) => {
   try {
     const id = req.params.id;
     const quizWorker: QuizWorker = new QuizWorker();

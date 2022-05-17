@@ -4,6 +4,7 @@
 /server/dist
 /server/node_modules
 /server/coverage
+/server/src/quiz.db
 /client/node_modules
 /node_modules
 /.pnp

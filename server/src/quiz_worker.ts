@@ -10,6 +10,9 @@ export class QuizWorker {
       filename: path.join(__dirname, "quiz.db"),
       autoload: true,
     });
+
+    const p = path.join(__dirname, "quiz.db");
+    console.log(`QuizWorker.constructor: DB path=${p}`);
   }
 
   public addQuiz(quiz: IQuiz): Promise<IQuiz> {
@@ -119,12 +122,14 @@ export class QuizWorker {
     console.log("IN QuizWorker.deleteAll()");
 
     return new Promise<void>((resolveHandler, rejectHandler) => {
-      this._db.remove({}, (err: Error | null) => {
+      this._db.remove({}, { multi: true }, (err: Error | null, numRemoved) => {
         if (err) {
           console.log("ERROR in QuizWorker.deleteAll(): ", err);
           rejectHandler(err);
         } else {
-          console.log("SUCCESS in QuizWorker.deleteAll()");
+          console.log(
+            `SUCCESS in QuizWorker.deleteAll(), removed ${numRemoved} entries.`
+          );
           resolveHandler();
         }
       });
