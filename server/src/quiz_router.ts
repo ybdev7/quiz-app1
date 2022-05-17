@@ -1,5 +1,11 @@
 import express, { NextFunction, Request, Response } from "express";
-import { BaseError, QuizNotFound, QuizzesNotFound } from "./errors";
+import {
+  BaseError,
+  QuizNotDeleted,
+  QuizNotFound,
+  QuizNotUpdated,
+  QuizzesNotFound,
+} from "./errors";
 import { IQuiz } from "./interfaces/interfaces";
 import { QuizWorker } from "./quiz_worker";
 
@@ -83,6 +89,30 @@ quizRouter.post("/", async (req, res, next) => {
     next();
   } catch (err) {
     next(new BaseError(500, "Failed to add quiz", (err as any).stack)); //tbd
+  }
+});
+
+/**
+ * Update existing quiz
+ */
+quizRouter.put("/", async (req, res, next) => {
+  try {
+    const quizWorker: QuizWorker = new QuizWorker();
+    const quiz: IQuiz = await quizWorker.updateQuiz(req.body);
+    res.json(quiz);
+  } catch (err) {
+    next(new QuizNotUpdated(req.body._id));
+  }
+});
+
+quizRouter.delete("/id=:id", async (req, res, next) => {
+  console.log("DELETE /tasks", req.body);
+  try {
+    const quizWorker: QuizWorker = new QuizWorker();
+    await quizWorker.deleteQuiz(req.params.id);
+    res.send({ message: "ok" });
+  } catch (err) {
+    next(new QuizNotDeleted(req.body._id));
   }
 });
 

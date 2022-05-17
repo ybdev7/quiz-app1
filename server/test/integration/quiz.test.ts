@@ -109,12 +109,29 @@ describe("quizzez routes", () => {
       expect((res.body as IQuiz).title).toEqual("History Quiz - 20th Century");
     }
   });
+
+  it("PUT - update quiz", async () => {
+    if (quiz2) {
+      quiz2.title = "UPDATE" + quiz2.title;
+      const res = await agent.put("/quiz/").send(quiz2).expect(200);
+      expect((res.body as IQuiz).title).toEqual(quiz2.title);
+    }
+  });
+
+  it("DELETE - delete quiz", async () => {
+    if (quiz2) {
+      const res = await agent.delete("/quiz/id=" + quiz2._id).expect(200);
+      expect(res.body.message).toEqual("ok");
+    }
+  });
+
   afterEach((done) => {
     server.close(done);
   });
 
   //stop server
-  afterAll(() => {
+  afterAll(async () => {
+    await new QuizWorker().deleteAll();
     server.close();
   });
 });

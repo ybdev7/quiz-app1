@@ -4,7 +4,7 @@
   "description": "server for quiz app",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage --detectOpenHandles --maxWorkers=1",
+    "test": "jest --coverage --detectOpenHandles --i",
     "dev": "node ./node_modules/nodemon/bin/nodemon.js -e ts --exec \"npm run compile\"",
     "compile": "npx tsc && node ./dist/src/main.js"
   },

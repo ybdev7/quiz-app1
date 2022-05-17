@@ -22,3 +22,15 @@ export class QuizNotFound extends BaseError {
     super(500, `Could not retrieve quiz with id ${id}.`, "Quiz not found.");
   }
 }
+
+export class QuizNotUpdated extends BaseError {
+  constructor(id: string) {
+    super(500, `Could not update quiz with id ${id}.`, "");
+  }
+}
+
+export class QuizNotDeleted extends BaseError {
+  constructor(id: string) {
+    super(500, `Could not delete quiz with id ${id}.`, "");
+  }
+}
