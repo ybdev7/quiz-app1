@@ -71,7 +71,7 @@ export class QuizWorker {
   }
 
   public deleteQuiz(id: string): Promise<string> {
-    console.log("in Tasks.Worker.deleteQuiz()", id);
+    console.log("in QuizWorker.deleteQuiz()", id);
 
     return new Promise<string>((resolveHandler, rejectHandler) => {
       this._db.remove(
@@ -79,10 +79,10 @@ export class QuizWorker {
         {},
         (err: Error | null, numRemoved: number) => {
           if (err) {
-            console.log("ERROR in Tasks.Worker.deleteQuiz(): ", err);
+            console.log("ERROR in QuizWorker.deleteQuiz(): ", err);
             rejectHandler(err);
           } else {
-            console.log("SUCCESS in Tasks.Worker.deleteQuiz():", numRemoved);
+            console.log("SUCCESS in QuizWorker.deleteQuiz():", numRemoved);
             resolveHandler(id);
           }
         }
@@ -91,7 +91,7 @@ export class QuizWorker {
   }
 
   public updateQuiz(quiz: IQuiz): Promise<IQuiz> {
-    console.log("Tasks.Worker.updateQuiz()", quiz);
+    console.log("QuizWorker.updateQuiz()", quiz);
 
     return new Promise<IQuiz>((resolveHandler, rejectHandler) => {
       this._db.update<IQuiz>(
@@ -105,11 +105,11 @@ export class QuizWorker {
           upsert: boolean
         ) => {
           if (err) {
-            console.log("ERROR in Tasks.Worker.updateQuiz(): ", err);
+            console.log("ERROR in QuizWorker.updateQuiz(): ", err);
             rejectHandler(err);
           } else {
             console.log(
-              "SUCCESS in Tasks.Worker.updateTask(): ",
+              "SUCCESS in QuizWorker.updateQuiz(): ",
               (updatedDoc as IQuiz)._id
             );
             resolveHandler(updatedDoc as IQuiz);

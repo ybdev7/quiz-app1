@@ -13,6 +13,11 @@ export class quizServer {
 
     this.init();
     this.initRoute();
+
+    //any unknown paths should be handled by the client code
+    this.app.get("/*", (req, res) => {
+      res.sendFile(path.join(__dirname, "../../../client/build/index.html"));
+    });
   }
 
   public get = () => {
@@ -21,10 +26,8 @@ export class quizServer {
 
   private init() {
     this.app.use(express.json());
-    this.app.use(
-      "/",
-      express.static(path.join(__dirname, "../../client/dist"))
-    );
+    //this.app.use("/", express.static(path.join(__dirname, "./dist/public")));
+    this.app.use(express.static(path.join(__dirname, "../../../client/build")));
 
     //enable CORS
     this.app.use(function (req: Request, res: Response, next: NextFunction) {

@@ -6,6 +6,8 @@
 /server/coverage
 /server/src/quiz.db
 /client/node_modules
+/client/build
+/.vscode
 /node_modules
 /.pnp
 .pnp.js

@@ -106,7 +106,7 @@ quizRouter.put("/", async (req, res, next) => {
 });
 
 quizRouter.delete("/id=:id", async (req, res, next) => {
-  console.log("DELETE /tasks", req.body);
+  console.log("DELETE /quiz", req.body);
   try {
     const quizWorker: QuizWorker = new QuizWorker();
     await quizWorker.deleteQuiz(req.params.id);

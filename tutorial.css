@@ -15,7 +15,8 @@
   --basic-dark-grey-color: rgb(121, 121, 121);
   --basic-grey-blue-color: rgb(189, 215, 223);
   --basic-light-grey-blue-color: rgb(234, 237, 238);
-
+  --basic-green-blue-color: rgb(143, 222, 203);
+  --basic-light-green-blue-color: rgb(182, 244, 229);
   /* border radius */
   --standard-border-radius: 10px;
 }
@@ -186,6 +187,34 @@ a:hover {
 .output-snippet code {
   background-color: white;
 }
+/* note div */
+.note-snippet-header {
+  background-color: var(--basic-green-blue-color);
+  color: white;
+  margin: var(--large-margin);
+  margin-top: var(--standard-margin);
+  margin-bottom: var(--standard-margin);
+  margin-bottom: 0;
+  padding: 5px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  font-size: medium;
+}
+.note-snippet {
+  border: 2px solid var(--basic-light-green-blue-color);
+  background-color: white;
+  margin: var(--large-margin);
+  margin-bottom: var(--standard-margin);
+  margin-top: 0;
+  padding: 5px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  font-size: medium;
+}
+.note-snippet span {
+  font-size: small;
+}
+
 /* Links */
 a {
   text-decoration: none;

@@ -38,6 +38,7 @@
         <br/><a href="#section-2">2. Setup Server</a>
         <br/><a href="#section-3">3. Server Implementation</a>
         <br/><a href="#section-4">4. Server Testing</a>
+        <br/><a href="#section-5">5. Client Setup</a>
         </div>
     </div>
     <h3 id="prerequisites">Prerequisites</h3>
@@ -165,9 +166,14 @@
       the database by calling <code>await quizWorker.getQuizById(id)</code> that returns a quiz. In case no such quiz is found in the database, 
       this code throws a custom <code>QuizNotFound</code> exception. Here, we make sure that this and any other exception will be handled by the 
       error handler that is part of the moddlewear by calling <code>next(err)</code> in the <code>catch</code> block. 
-      <br/>
-      <i>Quick aside  error handling mechanism- //tbd</i>
-      <br/>
+      </p>
+      <div class="note-snippet-header">Quick Explainer - Error Handling</div>
+      <div class="note-snippet">
+      <span>
+        TBD
+      </span>
+    </div>
+      <p>
       The error handler that is defined in the end of <code>quiz-router</code> module accepts either an <code>Error</code> or our 
       custom exception <code>BaseException</code> and sends an error status message, and detailed info as a responce:
       </p>
@@ -304,9 +310,9 @@
     </p>
 
     <h3 id="section-4">4. Server Testing</h3>
-    <p>use jest for unit and integratin testing </p>
+    <p>In this project, Jest will be used for unit and integratin testing. </p>
     <h3>Setup Jest</h3>
-    <p>in server folder we will install Jest to our by running 
+    <p>In the <code>server</code> folder we will install Jest to our by running 
 <pre><code>          npm install --save-dev jest @types/jest ts-jest ts-node
           npm install --save-dev supertest @types/supertest</code></pre>
     <p>Create jest.config.ts file in the server folder and copy the following into it :</p>
@@ -336,7 +342,7 @@
       <span>
         <pre><code>
         "scripts": {
-          "test": "jest --coverage --detectOpenHandles --maxWorkers=1",
+          "test": "jest --coverage --detectOpenHandles --i",
           "dev": "node ./node_modules/nodemon/bin/nodemon.js -e ts --exec \"npm run compile\"",
           "compile": "npx tsc && node ./dist/main.js"
         },
@@ -352,8 +358,27 @@
         </code></pre>
       </span>
     </div>
-    <p>Basically, with this configuration we are telling Jest where our tests can be found - in <code>test</code> folder and how to run them. 
-      <i>TBD - more expl</i> So, let's create the <code>tests</code> folder
+    <p>Basically, with this configuration we are telling Jest where our tests can be found - in the <code>test</code> folder
+       and how to run them. 
+      </p>
+      <div class="note-snippet-header">Quick Explainer - Jest</div>
+      <div class="note-snippet">
+      <span>
+        <ul><code>jest --coverage --detectOpenHandles --i</code>
+          <li><code>--coverage</code> turns on reporting. Turning on this option will provide us with reporting 
+            on percentages of code covered by the tests that Jest run.</li>
+            <li><code>--detectOpenHandles</code> turns on an (expensive in terms of performance) option of checking if there are any open handles that do not allow an exit.</li>
+            <li><code>--i</code> is an alias for <code>--runInBand</code> which runs the tests serially</li>
+         </ul>
+         
+         <ul><code>supertest, ts-node, ts-jest</code>
+        <li><code>supertest</code> allows us to test HTTP requests, we will use it to test the <code>quizRouter</code></li>
+        <li><code>ts-node</code> library is required to run Jest tests written in TypeScript</li>
+        <li><code>ts-jest</code> a Jest transformer for TypeScript that will allow us to use Jest to test the code written in TypeScrript</li>
+      </ul>
+      </span>
+    </div>
+      <p>So, let's create the <code>tests</code> folder
     under <code>server</code> folder. Inside it, create two folders: <code>unit</code> and <code>integration</code>. In the <code>unit</code> we will place tests that will test our logic, namely the <code>QuizWorker</code>,
   while the <code>integration</code> folder will contain tests for our RESTful API endpoints.</p>
   <p>Our folder structure at this point looks as folllows:</p>
@@ -443,6 +468,21 @@ Ran all test suites.</code></pre
     <p>The <code>--coverage</code> option continiently summarizes for us the percentage of code tested, so that we know exactly how much more of it is untested. 
     With that in mind, let's continue to test our routes.</p>
     <h3>Integration Tests for Routes</h3>
+    <p>Add <code>quiz.test.ts</code> file under <code>test/integration</code> folder. Each route in our quiz app must be tested, 
+      and to do so we need a server to listen to the requests. 
+      So, before each test we will start the server and 
+      after each test we will stop the server. To see that the router tests are passing, 
+      let's run it with <code>npm test /test/integration/quiz.test.ts</code>.
+      We can also run all the tests with <code>npm test</code>.</p>
+
+      <p>This concludes the server-side of the app, and without further ado, we continue to the client.</p>
+
+      <h3 id="section-5">Client Setup</h3>
+      <p><code>npx create-react-app client --template typescript</code></p>
+      <p>edit package.json with <code>"proxy": "http:/s/localhost:80</code> to be able to send requests to the
+        quiz server while working in development</p>
+        <p>edit quiz_server.ts so that our server will serve the client after build is done. </p>
+        <p><code> npm install uuid axios react-query</code> <code>npm install --save-dev </code></p>
 </div>
 <!-- Right Panel -->
 <div class="small-right-panel">
