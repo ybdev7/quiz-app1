@@ -1,4 +1,9 @@
-import { IEntity, IQuiz, QuizCategory } from "../interfaces/EntityInterfaces";
+import {
+  IEntity,
+  IQuiz,
+  QuizCategory,
+  QuizLevel,
+} from "../interfaces/EntityInterfaces";
 import {
   FilterableItem,
   FilterTerm,
@@ -6,6 +11,7 @@ import {
 } from "../interfaces/Interfaces";
 
 export const UNCHOOSABLE = -1;
+export const ALL = -2;
 export class FiltersFactory {
   static getRatingFilterItems = (): FilterableItem[] => {
     const filterItems: FilterableItem[] = [
@@ -44,42 +50,37 @@ export class FiltersFactory {
     return filterItems;
   };
 
-  static getPriceFilterItems = (): FilterableItem[] => {
+  static getLevelFilterItems = (): FilterableItem[] => {
     const filterItems: FilterableItem[] = [
       {
-        displayName: "Choose by Price",
+        displayName: "Choose by Level",
         displayValue: UNCHOOSABLE,
-        filterName: FilterNames.Popularity,
+        filterName: FilterNames.Level,
       },
       {
         displayName: "All",
-        displayValue: 0,
-        filterName: FilterNames.Price,
+        displayValue: ALL,
+        filterName: FilterNames.Level,
       },
       {
-        displayName: "0 - $10",
-        displayValue: 10,
-        filterName: FilterNames.Price,
+        displayName: "Easy",
+        displayValue: QuizLevel.Easy,
+        filterName: FilterNames.Level,
       },
       {
-        displayName: "$11 - $20",
-        displayValue: 20,
-        filterName: FilterNames.Price,
+        displayName: "Medium",
+        displayValue: QuizLevel.Medium,
+        filterName: FilterNames.Level,
       },
       {
-        displayName: "$21 - $30",
-        displayValue: 30,
-        filterName: FilterNames.Price,
+        displayName: "Advanced",
+        displayValue: QuizLevel.Advanced,
+        filterName: FilterNames.Level,
       },
       {
-        displayName: "$31 - $40",
-        displayValue: 40,
-        filterName: FilterNames.Price,
-      },
-      {
-        displayName: "$41- $50",
-        displayValue: 50,
-        filterName: FilterNames.Price,
+        displayName: "Expert",
+        displayValue: QuizLevel.Expert,
+        filterName: FilterNames.Level,
       },
     ];
     return filterItems;
@@ -92,7 +93,11 @@ export class FiltersFactory {
         displayValue: UNCHOOSABLE,
         filterName: FilterNames.Category,
       },
-      { displayName: "All", displayValue: 0, filterName: FilterNames.Category },
+      {
+        displayName: "All",
+        displayValue: ALL,
+        filterName: FilterNames.Category,
+      },
       {
         displayName: "Chemistry",
         displayValue: QuizCategory.Chemistry,
@@ -130,14 +135,15 @@ export class FiltersFactory {
     return filterTerm;
   };
 
-  static getPriceTerm = (filterStr: FilterableItem): FilterTerm => {
+  static getLevelTerm = (filterStr: FilterableItem): FilterTerm => {
     const filterTerm: FilterTerm = {
       filterName: filterStr.filterName,
       filterValue: filterStr,
       compFn: (item: any) => {
         return (
-          // tbd
-          true
+          filterStr.displayValue === ALL || //All
+          filterStr.displayValue === UNCHOOSABLE ||
+          (item as IQuiz).level === filterStr.displayValue
         );
       },
     };
@@ -151,7 +157,7 @@ export class FiltersFactory {
       filterValue: filterStr,
       compFn: (item: any) => {
         return (
-          filterStr.displayValue === 0 || //All
+          filterStr.displayValue === ALL || //All
           filterStr.displayValue === UNCHOOSABLE ||
           (item as IQuiz).category === filterStr.displayValue
         );
@@ -166,7 +172,7 @@ export enum FilterNames {
   Rating,
   Category,
   Popularity,
-  Price,
+  Level,
 }
 export abstract class BaseFilterBuilder implements IFilterBuilder<IEntity> {
   filters: Map<FilterNames, FilterableItem[]>;
@@ -179,11 +185,11 @@ export abstract class BaseFilterBuilder implements IFilterBuilder<IEntity> {
       case FilterNames.Rating:
         return "Rating";
       case FilterNames.Category:
-        return "Genre";
+        return "Category";
       case FilterNames.Popularity:
         return "Popularity";
-      case FilterNames.Price:
-        return "Price";
+      case FilterNames.Level:
+        return "Level";
       default:
         return "";
     }
@@ -199,8 +205,8 @@ export abstract class BaseFilterBuilder implements IFilterBuilder<IEntity> {
     switch (filterStr.filterName) {
       case FilterNames.Rating:
         return FiltersFactory.getRatingTerm(filterStr);
-      case FilterNames.Price:
-        return FiltersFactory.getPriceTerm(filterStr);
+      case FilterNames.Level:
+        return FiltersFactory.getLevelTerm(filterStr);
       case FilterNames.Category:
         return FiltersFactory.getCategoryTerm(filterStr);
       default:
@@ -215,11 +221,14 @@ export abstract class BaseFilterBuilder implements IFilterBuilder<IEntity> {
   public abstract getFilterTerms: () => FilterTerm[];
 }
 
-export class BookFiltersBuilder extends BaseFilterBuilder {
+export class QuizFiltersBuilder extends BaseFilterBuilder {
   constructor() {
     super();
-    this.filters.set(FilterNames.Rating, FiltersFactory.getRatingFilterItems());
-    this.filters.set(FilterNames.Price, FiltersFactory.getPriceFilterItems());
+    this.filters.set(
+      FilterNames.Category,
+      FiltersFactory.getCategoryFilterItems()
+    );
+    this.filters.set(FilterNames.Level, FiltersFactory.getLevelFilterItems());
     // console.log(
     //   `Rating FilterableItems=${this.filters.get(FilterNames.Rating)?.length}`
     // );
@@ -234,13 +243,13 @@ export class BookFiltersBuilder extends BaseFilterBuilder {
     return [
       this.getFilterTerm({
         displayName: "All",
-        displayValue: 0,
-        filterName: FilterNames.Rating,
+        displayValue: ALL,
+        filterName: FilterNames.Category,
       }),
       this.getFilterTerm({
         displayName: "All",
-        displayValue: 0,
-        filterName: FilterNames.Price,
+        displayValue: ALL,
+        filterName: FilterNames.Level,
       }),
     ];
   };
@@ -248,54 +257,54 @@ export class BookFiltersBuilder extends BaseFilterBuilder {
   public getDefaultFilters = (): Map<FilterNames, FilterableItem> => {
     const deafults = new Map<FilterNames, FilterableItem>();
     deafults.set(
-      FilterNames.Rating,
-      this.getFilterItems(FilterNames.Rating)[0]
+      FilterNames.Category,
+      this.getFilterItems(FilterNames.Category)[0]
     );
 
-    deafults.set(FilterNames.Price, this.getFilterItems(FilterNames.Price)[0]);
+    deafults.set(FilterNames.Level, this.getFilterItems(FilterNames.Level)[0]);
     return deafults;
   };
 }
 
-export class AuthorFiltersBuilder extends BaseFilterBuilder {
-  constructor() {
-    super();
-    this.filters.set(FilterNames.Rating, FiltersFactory.getRatingFilterItems());
-    this.filters.set(
-      FilterNames.Category,
-      FiltersFactory.getCategoryFilterItems()
-    );
-  }
-  public getFilters = (): Map<FilterNames, FilterableItem[]> => {
-    return this.filters;
-  };
+// export class AuthorFiltersBuilder extends BaseFilterBuilder {
+//   constructor() {
+//     super();
+//     this.filters.set(FilterNames.Rating, FiltersFactory.getRatingFilterItems());
+//     this.filters.set(
+//       FilterNames.Category,
+//       FiltersFactory.getCategoryFilterItems()
+//     );
+//   }
+//   public getFilters = (): Map<FilterNames, FilterableItem[]> => {
+//     return this.filters;
+//   };
 
-  public getDefaultFilters = (): Map<FilterNames, FilterableItem> => {
-    const defaults = new Map<FilterNames, FilterableItem>();
-    defaults.set(
-      FilterNames.Rating,
-      this.getFilterItems(FilterNames.Rating)[0]
-    );
+//   public getDefaultFilters = (): Map<FilterNames, FilterableItem> => {
+//     const defaults = new Map<FilterNames, FilterableItem>();
+//     defaults.set(
+//       FilterNames.Rating,
+//       this.getFilterItems(FilterNames.Rating)[0]
+//     );
 
-    defaults.set(
-      FilterNames.Category,
-      this.getFilterItems(FilterNames.Category)[0]
-    );
-    return defaults;
-  };
+//     defaults.set(
+//       FilterNames.Category,
+//       this.getFilterItems(FilterNames.Category)[0]
+//     );
+//     return defaults;
+//   };
 
-  public getFilterTerms = (): FilterTerm[] => {
-    return [
-      this.getFilterTerm({
-        displayName: "All",
-        displayValue: 0,
-        filterName: FilterNames.Rating,
-      }),
-      this.getFilterTerm({
-        displayName: "All",
-        displayValue: 0,
-        filterName: FilterNames.Category,
-      }),
-    ];
-  };
-}
+//   public getFilterTerms = (): FilterTerm[] => {
+//     return [
+//       this.getFilterTerm({
+//         displayName: "All",
+//         displayValue: 0,
+//         filterName: FilterNames.Rating,
+//       }),
+//       this.getFilterTerm({
+//         displayName: "All",
+//         displayValue: 0,
+//         filterName: FilterNames.Category,
+//       }),
+//     ];
+//   };
+// }
