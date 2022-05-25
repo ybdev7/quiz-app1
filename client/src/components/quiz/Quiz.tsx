@@ -4,6 +4,7 @@ import {
   QuizCategory,
   QuizLevel,
 } from "../../interfaces/EntityInterfaces";
+import IconButton, { IconPosition, IconsList } from "../buttons/IconButton";
 
 interface IQuizProps {
   quiz: IQuiz;
@@ -15,7 +16,7 @@ const Quiz = React.memo(({ quiz }: IQuizProps) => {
   console.log(`Actually rendering quiz id=${quiz._id}`);
   return (
     <>
-      <div>
+      <div className="quiz-div">
         <span>
           <b>{quiz.title}</b>
         </span>
@@ -24,6 +25,15 @@ const Quiz = React.memo(({ quiz }: IQuizProps) => {
         <br />
         <span>{" Level: " + levelToString(quiz.level)}</span>
         <span>{" Category: " + categoryToString(quiz.category)}</span>
+        <div>
+          <IconButton icon={IconsList.Delete} />
+          <IconButton icon={IconsList.Edit} />
+          <IconButton
+            icon={IconsList.ArrowRight}
+            iconPos={IconPosition.Right}
+            text="Take Quiz"
+          />
+        </div>
       </div>
     </>
   );
