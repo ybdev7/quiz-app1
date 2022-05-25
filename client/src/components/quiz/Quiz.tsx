@@ -17,15 +17,18 @@ const Quiz = React.memo(({ quiz }: IQuizProps) => {
   return (
     <>
       <div className="quiz-div">
-        <span>
-          <b>{quiz.title}</b>
+        <span className="font-bold text-slate-900">{quiz.title}</span>
+        <br />
+        <span className="font-light text-slate-700">{quiz.desc}</span>
+        <br />
+        <span className="font-light text-slate-700">
+          {" Level: " + levelToString(quiz.level)}
         </span>
         <br />
-        <span>{quiz.desc}</span>
-        <br />
-        <span>{" Level: " + levelToString(quiz.level)}</span>
-        <span>{" Category: " + categoryToString(quiz.category)}</span>
-        <div>
+        <span className="font-light text-slate-700">
+          {" Category: " + categoryToString(quiz.category)}
+        </span>
+        <div className="mt-3 mb-0">
           <IconButton icon={IconsList.Delete} />
           <IconButton icon={IconsList.Edit} />
           <IconButton
