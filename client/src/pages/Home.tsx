@@ -34,7 +34,6 @@ const Home: FC<{}> = (): ReactElement => {
   return (
     <>
       <div>
-        <h3>Quizzes</h3>
         {data && (
           <QuizList
             {...new QuizFilterableSearchableListProps(data as IQuiz[])}

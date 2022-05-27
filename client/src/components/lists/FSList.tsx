@@ -23,9 +23,11 @@ const GenericList = <T extends IEntity>({
 
   return (
     <>
-      {data.filter(filtering).map((entity) => {
-        return <div key={getKey(entity)}>{renderUI(entity)}</div>;
-      })}
+      <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+        {data.filter(filtering).map((entity) => {
+          return <div key={getKey(entity)}>{renderUI(entity)}</div>;
+        })}
+      </div>
     </>
   );
 };

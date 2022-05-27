@@ -14,6 +14,7 @@ export enum IconsList {
   ArrowRight = "AiFillCaretRight",
   Delete = "AiOutlineDelete",
   Edit = "AiOutlineEdit",
+  Preview = "AiOutlineFileSearch",
 }
 
 export enum IconPosition {
@@ -32,12 +33,12 @@ const IconButton = React.memo(
   }: IIconButtonProps) => {
     const iconElLeft = icon
       ? React.createElement(AI[icon], {
-          className: "text-slate-700 fill-current w-4 h-4 mr-2",
+          className: "text-slate-700 font-light fill-current w-4 h-4 mr-2",
         })
       : null;
     const iconElRight = icon
       ? React.createElement(AI[icon], {
-          className: "text-slate-700 fill-current w-4 h-4 ml-2",
+          className: "text-slate-700 font-light fill-current w-4 h-4 ml-2",
         })
       : null;
 
@@ -51,7 +52,8 @@ const IconButton = React.memo(
       iconPos === IconPosition.Left ? (
         <button
           key={uuidv4()}
-          className="bg-slate-100 hover:bg-slate-200 text-slate-700 shadow hover:shadow-lg font-bold py-1 px-4 rounded-full inline-flex items-center"
+          className="bg-slate-100 hover:bg-slate-200 
+          text-slate-700 font-medium shadow hover:shadow-lg font-bold py-1 px-4 rounded-full inline-flex items-center"
         >
           {iconElLeft}
           {/* <AiOutlineQuestion className="text-slate-700 fill-current w-4 h-4 mr-2" /> */}
@@ -60,7 +62,8 @@ const IconButton = React.memo(
       ) : (
         <button
           key={uuidv4()}
-          className="bg-slate-100 hover:bg-slate-200 text-slate-700 shadow hover:shadow-lg font-bold py-1 px-2 rounded-full inline-flex items-center"
+          className="bg-slate-100 hover:bg-slate-200 
+          text-slate-700 font-medium shadow hover:shadow-lg font-bold py-1 px-2 rounded-full inline-flex items-center"
         >
           {text}
           {iconElRight}

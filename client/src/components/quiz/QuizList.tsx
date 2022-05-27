@@ -9,7 +9,19 @@ import FSGenericList, {
 const QuizList = ({ ...props }: QuizFilterableSearchableListProps) => {
   return (
     <>
-      <FSGenericList {...props} />
+      <div
+        className="bg-blue-50 shadow-md
+        ml-0 mr-0 sm:ml-2 md:ml-3 lg:ml-40 xl:ml-40
+      sm:mr-2 md:mr-30 lg:mr-40 xl:mr-40"
+      >
+        <div
+          className=" h-24 sm:h-24 md:h-32 lg:32 flex justify-center items-center 
+        text-[36px] mb-2 text-violet-700 text-center bg-violet-200 rounded"
+        >
+          <div>EZieQuizzie</div>
+        </div>
+        <FSGenericList {...props} />
+      </div>
     </>
   );
 };
