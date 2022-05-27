@@ -24,17 +24,13 @@ enum CategoryIcons {
 const Quiz = React.memo(({ quiz }: IQuizProps) => {
   console.log(`Actually rendering quiz id=${quiz._id}`);
 
-  /** Easy,
-  Medium,
-  Advanced,
-  Expert, */
-  const colors = ["emerald", "rose", "sky", "violet"];
-  let levelColor = `bg-${colors[quiz.level]}-400`;
-
-  const divClassName = `h-auto lg:w-8 flex items-start justify-center m-0 p-0 bg-cover ${levelColor} p-0 m-0 rounded-tl-lg rounded-bl-lg overflow-hidden`;
-
+  const colorWeight = ["100", "300", "400", "500"];
+  const divLevelClassName = `bg-indigo-${
+    colorWeight[quiz.level]
+  } h-auto w-6 md:w-6 lg:w-8 flex items-start justify-center m-0 p-0 bg-cover p-0 m-0 rounded-tl-lg rounded-bl-lg overflow-hidden`;
+  console.log(divLevelClassName);
   const icon = () => {
-    const color = `text-${colors[quiz.level]}-700`;
+    const color = `text-indigo-700`;
 
     console.log(color);
     const className = `h-6 w-6 inline-block p-0 m-0 ${color}`;
@@ -67,7 +63,7 @@ const Quiz = React.memo(({ quiz }: IQuizProps) => {
       m-2 sm:m-2 md:m-3 lg:m-4 xl:m-4"
       >
         <div className="max-w-sm w-full lg:max-w-full flex">
-          <div className={divClassName}>
+          <div className={divLevelClassName}>
             <div>{icon()}</div>
           </div>
           <div className="ml-2">
