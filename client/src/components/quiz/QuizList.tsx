@@ -26,7 +26,7 @@ const QuizList = ({ ...props }: QuizFilterableSearchableListProps) => {
               <span className="italic font-bold">Q</span>uizzies
             </span>
             <p className=" text-lg font-['Brush_Script_MT']">
-              Best quizzes for every subject
+              Simply the best quizzes for every subject
             </p>
           </div>
         </div>
