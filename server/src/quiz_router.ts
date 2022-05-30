@@ -8,6 +8,7 @@ import {
 } from "./errors";
 import { IQuiz } from "./interfaces/interfaces";
 import { QuizWorker } from "./quiz_worker";
+import { quizWorker } from "./quizDAL";
 
 //create router
 const quizRouter = express.Router();
@@ -50,7 +51,7 @@ quizRouter.get("/error", (req, res, next) => {
  */
 quizRouter.get("/", async (req, res, next) => {
   try {
-    const quizWorker: QuizWorker = new QuizWorker();
+    //const quizWorker: QuizWorker = new QuizWorker();
     const quizzes: IQuiz[] = await quizWorker.listQuizzes();
     res.json(quizzes);
     next();
@@ -66,7 +67,7 @@ quizRouter.get("/", async (req, res, next) => {
 quizRouter.get("/id=:id", async (req, res, next) => {
   try {
     const id = req.params.id;
-    const quizWorker: QuizWorker = new QuizWorker();
+    // const quizWorker: QuizWorker = new QuizWorker();
     const quiz: IQuiz = await quizWorker.getQuizById(id);
     if (!quiz) {
       throw new QuizNotFound(id);
@@ -83,7 +84,7 @@ quizRouter.get("/id=:id", async (req, res, next) => {
  */
 quizRouter.post("/", async (req, res, next) => {
   try {
-    const quizWorker: QuizWorker = new QuizWorker();
+    // const quizWorker: QuizWorker = new QuizWorker();
     const quiz: IQuiz = await quizWorker.addQuiz(req.body);
     res.json(quiz);
     next();
@@ -97,7 +98,7 @@ quizRouter.post("/", async (req, res, next) => {
  */
 quizRouter.put("/", async (req, res, next) => {
   try {
-    const quizWorker: QuizWorker = new QuizWorker();
+    // const quizWorker: QuizWorker = new QuizWorker();
     const quiz: IQuiz = await quizWorker.updateQuiz(req.body);
     res.json(quiz);
   } catch (err) {
@@ -108,7 +109,7 @@ quizRouter.put("/", async (req, res, next) => {
 quizRouter.delete("/id=:id", async (req, res, next) => {
   console.log("DELETE /quiz", req.body);
   try {
-    const quizWorker: QuizWorker = new QuizWorker();
+    // const quizWorker: QuizWorker = new QuizWorker();
     await quizWorker.deleteQuiz(req.params.id);
     res.send({ message: "ok" });
   } catch (err) {
